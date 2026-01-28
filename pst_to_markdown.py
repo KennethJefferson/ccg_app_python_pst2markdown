@@ -23,9 +23,9 @@ except ImportError:
     sys.exit(1)
 
 try:
-    from markdownify import markdownify as md
+    import html2text
 except ImportError:
-    print("Error: markdownify is required. Install with: pip install markdownify")
+    print("Error: html2text is required. Install with: pip install html2text")
     sys.exit(1)
 
 try:
@@ -102,7 +102,14 @@ def html_to_markdown(html_body: str, plain_body: str) -> str:
     """Convert HTML body to Markdown, falling back to plain text if needed."""
     if html_body:
         try:
-            return md(html_body, heading_style="ATX", bullets="-")
+            h = html2text.HTML2Text()
+            h.ignore_links = False
+            h.ignore_images = False
+            h.ignore_tables = False
+            h.body_width = 0  # No wrapping
+            h.skip_internal_links = True
+            h.inline_links = True
+            return h.handle(html_body)
         except Exception:
             pass
     return plain_body or ""
